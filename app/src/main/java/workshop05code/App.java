@@ -56,14 +56,18 @@ public class App {
             String line;
             int i = 1;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
-                wordleDatabaseConnection.addValidWord(i, line);
+                if(!(!line.matches("[a-z]+") || line.length() != 4)){
+                    logger.log(Level.INFO, line);
+                    wordleDatabaseConnection.addValidWord(i, line);
+                }
+                else {
+                    logger.log(Level.SEVERE, line);
+                }
                 i++;
             }
 
         } catch (IOException e) {
-            System.out.println("Not able to load . Sorry!");
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, "Not able to load. Sorry!", e.getMessage());
             return;
         }
 
@@ -72,19 +76,13 @@ public class App {
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.print("Enter a 4 letter word for a guess or q to quit: ");
             String guess = scanner.nextLine();
-            
-            // guess = guess.replaceAll("[^a-z]", ""); // REPLACE ALL NON a-z CHAR
-            // System.out.println(guess.length());
 
             while (!guess.equals("q")) {
 
-                while (guess.length() != 4 || guess.matches("[^a-z]")) {
+                while (!guess.matches("[a-z]+") || guess.length() != 4) {
                     System.out.println("The word you entered was invalid, try again: ");
+                    logger.log(Level.SEVERE, "Not Acceptable String");
                     guess = scanner.nextLine();
-
-                    // guess = guess.replaceAll("[^a-z]", ""); // REPLACE ALL NON a-z CHAR
-                    // System.out.println(guess.length());
-        
                 }
 
                 System.out.println("You've guessed '" + guess + "'.");
@@ -100,7 +98,8 @@ public class App {
                 guess = scanner.nextLine();
             }
         } catch (NoSuchElementException | IllegalStateException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Not able to load. Sorry!", e.getMessage());
+            System.out.println("Something went wrong!");
         }
 
     }
